@@ -29,7 +29,7 @@ Bun.serve({
   },
 });
 
-console.log(`MoltBot Bird server running on http://localhost:${PORT}`);
+console.log(`Read-Only Bird server running on http://localhost:${PORT}`);
 console.log(`Dashboard: http://localhost:${PORT}/dashboard`);
 console.log(`API: POST http://localhost:${PORT}/api/command`);
 

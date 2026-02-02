@@ -83,7 +83,7 @@ function renderDashboard(url: URL): Response {
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>MoltBot Bird - Dashboard</title>
+<title>Read-Only Bird - Dashboard</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f5f5f5; color: #333; padding: 20px; max-width: 1200px; margin: 0 auto; }
@@ -110,7 +110,7 @@ function renderDashboard(url: URL): Response {
 </style>
 </head>
 <body>
-<h1>MoltBot Bird</h1>
+<h1>Read-Only Bird</h1>
 <p class="subtitle">Analytics Dashboard</p>
 
 <div class="stats-grid">

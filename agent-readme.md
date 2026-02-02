@@ -1,14 +1,14 @@
-# MoltBot Bird - Agent Instructions
+# Read-Only Bird - Agent Instructions
 
-You have access to a read-only Twitter/X API via MoltBot Bird. This service is available on the Tailscale network.
+You have access to a read-only Twitter/X API via Read-Only Bird. This service is available on the Tailscale network.
 
 ## Endpoint
 
 ```
-POST http://100.122.200.45:3000/api/command
+POST http://localhost:3000/api/command
 ```
 
-Your device must be connected to Tailscale to reach this IP.
+Ask the human operator for the correct IP address.
 
 ## Authentication
 

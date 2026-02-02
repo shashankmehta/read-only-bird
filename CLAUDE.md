@@ -1,4 +1,4 @@
-# MoltBot Bird
+# Read-Only Bird
 
 Read-only Twitter/X API wrapper built on [@steipete/bird](https://github.com/steipete/bird). Bun + TypeScript.
 
@@ -37,7 +37,7 @@ The server runs on Tailscale at `100.122.200.45:3000`. Agent-facing docs are in 
 
 ## Setup
 
-Run `bash setup.sh` to install dependencies, configure env vars, and register as a macOS launchd service (`com.moltbot.bird`). The script generates `run.sh` (a wrapper that sources `.env` then execs bun) and installs a plist to `~/Library/LaunchAgents/`.
+Run `bash setup.sh` to install dependencies, configure env vars, and register as a macOS launchd service (`com.readonly.bird`). The script generates `run.sh` (a wrapper that sources `.env` then execs bun) and installs a plist to `~/Library/LaunchAgents/`.
 
 ## Gotchas
 

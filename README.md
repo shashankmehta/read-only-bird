@@ -1,28 +1,61 @@
-# MoltBot Bird
+# Read-Only Bird
 
 Read-only Twitter/X API wrapper. Exposes a single authenticated HTTP endpoint that accepts [bird](https://github.com/steipete/bird) CLI-style commands and returns JSON. Write operations are blocked.
 
-## Setup
+This wrapper was created to give a read only access to OpenClaw to a user's X account. Primarily for security reasons.
+
+NOTE: This service needs to be run on a system that OpenClaw DOES NOT have access to. Otherwise the security mechanism is practically useless. I run OpenClaw on a VM and this service on a separate VM. 
+
+## Prerequisites
+
+- [Bun](https://bun.sh) runtime installed
+- Twitter/X cookie values (`auth_token` and `ct0`) — open https://x.com in your browser, go to DevTools > Application > Cookies > `https://x.com`, and copy them
+
+## Installation
+
+The quickest way to get running is the setup script, which installs dependencies, configures env vars, and registers a macOS launchd service so the server starts automatically on login:
+
+```bash
+bash setup.sh
+```
+
+The script will prompt for:
+
+| Variable | Description |
+|---|---|
+| `TWITTER_AUTH_TOKEN` | `auth_token` cookie from x.com |
+| `TWITTER_CT0` | `ct0` cookie from x.com |
+| `DASHBOARD_PASSWORD` | Password for the analytics dashboard |
+| `PORT` | Server port (default `3000`) |
+
+Values are written to `.env`. Re-running the script preserves existing values (press Enter to keep them).
+
+### What the setup script does
+
+1. Checks that `bun` is installed
+2. Runs `bun install`
+3. Creates `logs/` directory for service output
+4. Prompts for env vars and writes `.env`
+5. Generates `run.sh` — a wrapper that sources `.env` and execs bun (keeps secrets out of the plist)
+6. Installs a launchd plist to `~/Library/LaunchAgents/com.readonly.bird.plist`
+7. Loads the service via `launchctl`
+
+### Managing the service
+
+```bash
+launchctl list | grep readonly.bird                                          # check status
+launchctl unload ~/Library/LaunchAgents/com.readonly.bird.plist         # stop
+launchctl load ~/Library/LaunchAgents/com.readonly.bird.plist           # start
+tail -f logs/stderr.log                                                # watch logs
+```
+
+### Manual setup (without launchd)
+
+If you prefer to run the server manually:
 
 ```bash
 bun install
-cp .env.example .env
-```
-
-Fill in `.env`:
-
-```
-TWITTER_AUTH_TOKEN=<your auth_token cookie from x.com>
-TWITTER_CT0=<your ct0 cookie from x.com>
-DASHBOARD_PASSWORD=<password for the analytics dashboard>
-PORT=3000
-```
-
-To get the cookie values, open https://x.com in your browser, go to DevTools > Application > Cookies > `https://x.com`, and copy `auth_token` and `ct0`.
-
-## Running
-
-```bash
+cp .env.example .env   # fill in values (see table above)
 bun run start
 # or with auto-reload:
 bun run dev

@@ -2,11 +2,11 @@
 set -euo pipefail
 
 REPO_DIR="$(cd "$(dirname "$0")" && pwd)"
-SERVICE_LABEL="com.moltbot.bird"
+SERVICE_LABEL="com.readonly.bird"
 PLIST_NAME="${SERVICE_LABEL}.plist"
 PLIST_PATH="$HOME/Library/LaunchAgents/$PLIST_NAME"
 
-echo "=== MoltBot Bird Setup ==="
+echo "=== Read-Only Bird Setup ==="
 echo ""
 
 # 1. Check bun is installed
@@ -140,7 +140,7 @@ echo "Logs:    $REPO_DIR/logs/stdout.log"
 echo "         $REPO_DIR/logs/stderr.log"
 echo ""
 echo "Useful commands:"
-echo "  launchctl list | grep moltbot   # check service status"
+echo "  launchctl list | grep readonly.bird   # check service status"
 echo "  launchctl unload $PLIST_PATH    # stop service"
 echo "  launchctl load $PLIST_PATH      # start service"
 echo "  tail -f $REPO_DIR/logs/stderr.log  # watch logs"
