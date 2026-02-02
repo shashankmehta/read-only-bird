@@ -1,0 +1,15 @@
+{
+  "name": "moltbot-bird",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "start": "bun run src/server.ts",
+    "dev": "bun --watch run src/server.ts"
+  },
+  "dependencies": {
+    "@steipete/bird": "latest"
+  },
+  "devDependencies": {
+    "@types/bun": "^1.3.8"
+  }
+}

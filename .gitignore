@@ -1,0 +1,5 @@
+node_modules/
+keys.json
+analytics.db
+.env
+bun.lock
