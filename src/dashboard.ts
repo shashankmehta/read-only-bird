@@ -160,7 +160,7 @@ ${keys.length === 0 ? '<tr><td colspan="4">No keys configured</td></tr>' : ""}
 ${logs
   .map(
     (l) =>
-      `<tr><td>${l.id}</td><td>${escapeHtml(l.timestamp)}</td><td>${escapeHtml(l.key_id)}</td><td>${escapeHtml(l.command)}</td><td class="status-${String(l.status_code)[0]}">${l.status_code}</td><td>${l.response_time_ms}</td></tr>`
+      `<tr><td>${l.id}</td><td class="ts" data-utc="${escapeHtml(l.timestamp)}">${escapeHtml(l.timestamp)}</td><td>${escapeHtml(l.key_id)}</td><td>${escapeHtml(l.command)}</td><td class="status-${String(l.status_code)[0]}">${l.status_code}</td><td>${l.response_time_ms}</td></tr>`
   )
   .join("\n")}
 ${logs.length === 0 ? '<tr><td colspan="6">No requests yet</td></tr>' : ""}
@@ -192,6 +192,11 @@ document.getElementById('addKeyForm').addEventListener('submit', async (e) => {
   } else {
     alert('Failed to create key');
   }
+});
+
+document.querySelectorAll('.ts[data-utc]').forEach(el => {
+  const d = new Date(el.dataset.utc);
+  el.textContent = d.toLocaleString();
 });
 
 async function revokeKey(id) {
