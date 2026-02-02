@@ -35,6 +35,10 @@ Single HTTP endpoint (`POST /api/command`) that accepts bird CLI-style command s
 
 The server runs on Tailscale at `100.122.200.45:3000`. Agent-facing docs are in `agent-readme.md`.
 
+## Setup
+
+Run `bash setup.sh` to install dependencies, configure env vars, and register as a macOS launchd service (`com.moltbot.bird`). The script generates `run.sh` (a wrapper that sources `.env` then execs bun) and installs a plist to `~/Library/LaunchAgents/`.
+
 ## Gotchas
 
 - `git` is aliased in this shell environment. Use `/usr/bin/git` for git commands.

@@ -3,3 +3,5 @@ keys.json
 analytics.db
 .env
 bun.lock
+logs/
+run.sh
