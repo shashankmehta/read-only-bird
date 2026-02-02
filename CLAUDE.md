@@ -33,7 +33,7 @@ Single HTTP endpoint (`POST /api/command`) that accepts bird CLI-style command s
 
 ## Deployment
 
-The server runs on Tailscale at `100.122.200.45:3000`. Agent-facing docs are in `agent-readme.md`.
+The server runs on Tailscale at `100.122.200.45:3000`. Agent-facing docs are in `AGENT-README.md`.
 
 ## Setup
 

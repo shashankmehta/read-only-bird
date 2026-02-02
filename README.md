@@ -344,3 +344,7 @@ The dashboard at `/dashboard` shows:
 - Key management (add/revoke keys)
 
 Protected by `DASHBOARD_PASSWORD` via HTTP Basic Auth (username can be anything).
+
+## Agent Instructions
+
+[`AGENT-README.md`](AGENT-README.md) contains standalone API documentation designed for AI agents. Share it with an OpenClaw instance to set up a skill that can query Twitter/X through this service.
