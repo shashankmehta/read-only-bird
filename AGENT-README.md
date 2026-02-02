@@ -1,6 +1,8 @@
 # Read-Only Bird - Agent Instructions
 
-You have access to a read-only Twitter/X API via Read-Only Bird. This service is available on the Tailscale network.
+You have access to a read-only Twitter/X API via Read-Only Bird.
+
+This document will give you all necessary details to setup a new skill to use this for any X/Twitter related activity which is read only.
 
 ## Endpoint
 
