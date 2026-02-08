@@ -185,6 +185,15 @@ Do not attempt these commands.
 1. `search "topic" -n 20` → first page
 2. Use `nextCursor` from response: `search "topic" -n 20 --cursor <nextCursor>`
 
+## Account Routing
+
+Commands are routed across two Twitter accounts internally:
+
+- **Main account** handles account-specific data: `whoami`, `check`, `bookmarks`, `bookmark-folder`, `likes`, `home`, `mentions` (without `-u`), `lists`, `list-memberships`
+- **Secondary account** handles generic reads: `read`, `replies`, `thread`, `search`, `user-id`, `user-about`, `following`, `followers`, `user-tweets`, `news`, `list-timeline`, `mentions -u <handle>`
+
+This is transparent to API consumers — you don't need to do anything differently. The routing is automatic.
+
 ## Rate Limits
 
 There are no rate limits enforced by this service, but the underlying Twitter API has its own limits. If you receive errors, back off and retry after a delay. When paginating, use `--delay 1000` or higher.

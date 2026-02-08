@@ -9,7 +9,7 @@ NOTE: This service needs to be run on a system that OpenClaw DOES NOT have acces
 ## Prerequisites
 
 - [Bun](https://bun.sh) runtime installed
-- Twitter/X cookie values (`auth_token` and `ct0`) — open https://x.com in your browser, go to DevTools > Application > Cookies > `https://x.com`, and copy them
+- Twitter/X cookie values (`auth_token` and `ct0`) for **two accounts** — open https://x.com in your browser, go to DevTools > Application > Cookies > `https://x.com`, and copy them. The main account is used for account-specific reads (bookmarks, likes, home timeline), and a secondary account handles generic reads (search, tweet/profile lookups) to reduce API footprint on the main account.
 
 ## Installation
 
@@ -23,8 +23,10 @@ The script will prompt for:
 
 | Variable | Description |
 |---|---|
-| `TWITTER_AUTH_TOKEN` | `auth_token` cookie from x.com |
-| `TWITTER_CT0` | `ct0` cookie from x.com |
+| `TWITTER_AUTH_TOKEN` | `auth_token` cookie from x.com (main account) |
+| `TWITTER_CT0` | `ct0` cookie from x.com (main account) |
+| `SECONDARY_AUTH_TOKEN` | `auth_token` cookie from x.com (secondary account) |
+| `SECONDARY_CT0` | `ct0` cookie from x.com (secondary account) |
 | `DASHBOARD_PASSWORD` | Password for the analytics dashboard |
 | `PORT` | Server port (default `3000`) |
 
@@ -305,6 +307,20 @@ AI-curated only:
 curl -X POST -H "Authorization: Bearer $KEY" -H "Content-Type: application/json" \
   -d '{"command":"news -n 10 --ai-only"}' $API
 ```
+
+## Dual Account Routing
+
+API calls are split across two Twitter accounts to reduce the main account's API footprint:
+
+**Main account** — commands that access account-specific data:
+`whoami`, `check`, `bookmarks`, `bookmark-folder`, `likes`, `home`, `mentions` (without `-u`), `lists`, `list-memberships`
+
+**Secondary account** — generic public reads:
+`read`, `replies`, `thread`, `search`, `user-id`, `user-about`, `following`, `followers`, `user-tweets`, `news`, `list-timeline`, `mentions -u <handle>`
+
+The `mentions` command routes conditionally: without `-u` it reads the main account's mentions, with `-u <handle>` it uses the secondary account to search for another user's mentions.
+
+Both accounts are required — the server will not start if either set of credentials is missing.
 
 ## Blocked Commands
 

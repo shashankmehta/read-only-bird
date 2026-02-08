@@ -1,4 +1,4 @@
-import { getTwitterClient } from "./twitter.js";
+import { getClientForCommand, getSecondaryClient } from "./twitter.js";
 import { extractTweetId } from "@steipete/bird/dist/lib/extract-tweet-id.js";
 import type { ExploreTab } from "@steipete/bird";
 
@@ -163,7 +163,7 @@ export async function executeCommand(commandStr: string): Promise<CommandResult>
   }
 
   try {
-    const client = getTwitterClient();
+    const client = getClientForCommand(command);
     const result = await dispatch(client, command, positional, flags);
     return { status: 200, body: result };
   } catch (err: any) {
@@ -228,14 +228,17 @@ async function dispatch(
       const handle = flags["u"] ?? flags["user"];
       let query: string;
       if (typeof handle === "string") {
+        // Use secondary client for other users' mentions
+        const mentionsClient = getSecondaryClient();
         query = `@${handle.replace(/^@/, "")}`;
+        return mentionsClient.search(query, count);
       } else {
         const me = await client.getCurrentUser();
         if (!me.success || !me.user)
           throw new Error("Could not resolve current user for mentions");
         query = `@${me.user.username}`;
+        return client.search(query, count);
       }
-      return client.search(query, count);
     }
 
     case "bookmarks": {
