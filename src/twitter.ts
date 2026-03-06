@@ -63,6 +63,10 @@ export function getSecondaryClient(): TwitterClient {
   return secondaryClient;
 }
 
+export function getAccountForCommand(command: string): string {
+  return MAIN_ACCOUNT_COMMANDS.has(command) ? "main" : "secondary";
+}
+
 export function getClientForCommand(command: string): TwitterClient {
   if (MAIN_ACCOUNT_COMMANDS.has(command)) {
     return getMainClient();

@@ -1,4 +1,4 @@
-import { getClientForCommand, getSecondaryClient } from "./twitter.js";
+import { getClientForCommand, getSecondaryClient, getAccountForCommand } from "./twitter.js";
 import { extractTweetId } from "@steipete/bird/dist/lib/extract-tweet-id.js";
 import type { ExploreTab } from "@steipete/bird";
 
@@ -137,12 +137,13 @@ const ALLOWED_COMMANDS = new Set([
 export interface CommandResult {
   status: number;
   body: unknown;
+  account: string;
 }
 
 export async function executeCommand(commandStr: string): Promise<CommandResult> {
   const tokens = tokenize(commandStr.trim());
   if (tokens.length === 0) {
-    return { status: 400, body: { error: "Empty command" } };
+    return { status: 400, body: { error: "Empty command" }, account: "none" };
   }
 
   const command = tokens[0];
@@ -152,6 +153,7 @@ export async function executeCommand(commandStr: string): Promise<CommandResult>
     return {
       status: 403,
       body: { error: `Command "${command}" is blocked. Only read-only commands are allowed.` },
+      account: "none",
     };
   }
 
@@ -159,17 +161,25 @@ export async function executeCommand(commandStr: string): Promise<CommandResult>
     return {
       status: 400,
       body: { error: `Unknown command "${command}". Allowed: ${[...ALLOWED_COMMANDS].join(", ")}` },
+      account: "none",
     };
+  }
+
+  // Determine account: mentions with -u flag overrides to secondary
+  let account = getAccountForCommand(command);
+  if (command === "mentions" && (flags["u"] || flags["user"])) {
+    account = "secondary";
   }
 
   try {
     const client = getClientForCommand(command);
     const result = await dispatch(client, command, positional, flags);
-    return { status: 200, body: result };
+    return { status: 200, body: result, account };
   } catch (err: any) {
     return {
       status: 500,
       body: { success: false, error: err.message ?? String(err) },
+      account,
     };
   }
 }

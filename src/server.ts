@@ -74,7 +74,7 @@ async function handleCommand(req: Request): Promise<Response> {
   const elapsed = Date.now() - start;
 
   // Log
-  logRequest(apiKey.id, commandName, result.status, elapsed);
+  logRequest(apiKey.id, commandName, result.status, elapsed, result.account);
 
   return Response.json(result.body, { status: result.status });
 }

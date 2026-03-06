@@ -1,6 +1,7 @@
 import {
   getRequestsPerKey,
   getRequestsPerCommand,
+  getRequestsPerAccount,
   getRecentLogs,
 } from "./analytics.js";
 import { getKeys, addKey, revokeKey, type ApiKey } from "./keys.js";
@@ -74,6 +75,7 @@ function renderDashboard(url: URL): Response {
   const page = parseInt(url.searchParams.get("page") ?? "1", 10);
   const perKeyStats = getRequestsPerKey();
   const perCommandStats = getRequestsPerCommand();
+  const perAccountStats = getRequestsPerAccount();
   const { logs, total } = getRecentLogs(page, 100);
   const keys = getKeys();
   const totalPages = Math.max(1, Math.ceil(total / 100));
@@ -94,7 +96,7 @@ function renderDashboard(url: URL): Response {
   th, td { padding: 10px 14px; text-align: left; border-bottom: 1px solid #eee; }
   th { background: #f9f9f9; font-weight: 600; }
   tr:hover { background: #f5f8ff; }
-  .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .stats-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
   .pagination { margin: 16px 0; display: flex; gap: 8px; }
   .pagination a { padding: 6px 12px; background: #fff; border: 1px solid #ddd; border-radius: 4px; text-decoration: none; color: #333; }
   .pagination a.active { background: #333; color: #fff; }
@@ -106,6 +108,7 @@ function renderDashboard(url: URL): Response {
   button.danger:hover { background: #e00; }
   .key-value { font-family: monospace; font-size: 0.85em; max-width: 200px; overflow: hidden; text-overflow: ellipsis; }
   .status-2 { color: #080; } .status-4 { color: #c80; } .status-5 { color: #c00; }
+  .account-main { color: #080; font-weight: 600; } .account-secondary { color: #36c; font-weight: 600; }
   @media (max-width: 768px) { .stats-grid { grid-template-columns: 1fr; } }
 </style>
 </head>
@@ -136,6 +139,15 @@ ${perCommandStats.map((s) => `<tr><td>${escapeHtml(s.command)}</td><td>${s.count
 ${perCommandStats.length === 0 ? '<tr><td colspan="2">No data</td></tr>' : ""}
 </table>
 </div>
+
+<div>
+<h2>Requests per Account (30d)</h2>
+<table>
+<tr><th>Account</th><th>Count</th></tr>
+${perAccountStats.map((s) => `<tr><td class="account-${s.account}">${escapeHtml(s.account)}</td><td>${s.count}</td></tr>`).join("\n")}
+${perAccountStats.length === 0 ? '<tr><td colspan="2">No data</td></tr>' : ""}
+</table>
+</div>
 </div>
 
 <h2>API Keys</h2>
@@ -156,14 +168,14 @@ ${keys.length === 0 ? '<tr><td colspan="4">No keys configured</td></tr>' : ""}
 
 <h2>Recent Requests</h2>
 <table>
-<tr><th>ID</th><th>Timestamp</th><th>Key ID</th><th>Command</th><th>Status</th><th>Time (ms)</th></tr>
+<tr><th>ID</th><th>Timestamp</th><th>Key ID</th><th>Command</th><th>Account</th><th>Status</th><th>Time (ms)</th></tr>
 ${logs
   .map(
     (l) =>
-      `<tr><td>${l.id}</td><td class="ts" data-utc="${escapeHtml(l.timestamp)}">${escapeHtml(l.timestamp)}</td><td>${escapeHtml(l.key_id)}</td><td>${escapeHtml(l.command)}</td><td class="status-${String(l.status_code)[0]}">${l.status_code}</td><td>${l.response_time_ms}</td></tr>`
+      `<tr><td>${l.id}</td><td class="ts" data-utc="${escapeHtml(l.timestamp)}">${escapeHtml(l.timestamp)}</td><td>${escapeHtml(l.key_id)}</td><td>${escapeHtml(l.command)}</td><td class="account-${l.account}">${escapeHtml(l.account)}</td><td class="status-${String(l.status_code)[0]}">${l.status_code}</td><td>${l.response_time_ms}</td></tr>`
   )
   .join("\n")}
-${logs.length === 0 ? '<tr><td colspan="6">No requests yet</td></tr>' : ""}
+${logs.length === 0 ? '<tr><td colspan="7">No requests yet</td></tr>' : ""}
 </table>
 
 <div class="pagination">

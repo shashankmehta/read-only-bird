@@ -12,8 +12,28 @@ db.run(`
     key_id TEXT NOT NULL,
     command TEXT NOT NULL,
     status_code INTEGER NOT NULL,
-    response_time_ms INTEGER NOT NULL
+    response_time_ms INTEGER NOT NULL,
+    account TEXT NOT NULL DEFAULT 'unknown'
   )
+`);
+
+// Migration: add account column to existing databases
+try {
+  db.run(`ALTER TABLE request_log ADD COLUMN account TEXT NOT NULL DEFAULT 'unknown'`);
+} catch {
+  // Column already exists
+}
+
+// Backfill account for old rows based on command routing logic
+db.run(`
+  UPDATE request_log SET account = 'main'
+  WHERE account = 'unknown'
+    AND command IN ('whoami','check','bookmarks','bookmark-folder','likes','home','mentions','lists','list-memberships')
+`);
+db.run(`
+  UPDATE request_log SET account = 'secondary'
+  WHERE account = 'unknown'
+    AND command NOT IN ('whoami','check','bookmarks','bookmark-folder','likes','home','mentions','lists','list-memberships')
 `);
 
 db.run(`
@@ -24,8 +44,8 @@ db.run(`
 `);
 
 const insertStmt = db.prepare(`
-  INSERT INTO request_log (timestamp, key_id, command, status_code, response_time_ms)
-  VALUES (?, ?, ?, ?, ?)
+  INSERT INTO request_log (timestamp, key_id, command, status_code, response_time_ms, account)
+  VALUES (?, ?, ?, ?, ?, ?)
 `);
 
 const pruneStmt = db.prepare(`
@@ -36,10 +56,11 @@ export function logRequest(
   keyId: string,
   command: string,
   statusCode: number,
-  responseTimeMs: number
+  responseTimeMs: number,
+  account: string
 ): void {
   pruneStmt.run();
-  insertStmt.run(new Date().toISOString(), keyId, command, statusCode, responseTimeMs);
+  insertStmt.run(new Date().toISOString(), keyId, command, statusCode, responseTimeMs, account);
 }
 
 export interface KeyStats {
@@ -72,6 +93,21 @@ export function getRequestsPerCommand(): CommandStats[] {
     .all() as CommandStats[];
 }
 
+export interface AccountStats {
+  account: string;
+  count: number;
+}
+
+export function getRequestsPerAccount(): AccountStats[] {
+  return db
+    .prepare(
+      `SELECT account, COUNT(*) as count FROM request_log
+       WHERE timestamp > datetime('now', '-30 days')
+       GROUP BY account ORDER BY count DESC`
+    )
+    .all() as AccountStats[];
+}
+
 export interface LogEntry {
   id: number;
   timestamp: string;
@@ -79,6 +115,7 @@ export interface LogEntry {
   command: string;
   status_code: number;
   response_time_ms: number;
+  account: string;
 }
 
 export function getRecentLogs(page: number = 1, pageSize: number = 100): { logs: LogEntry[]; total: number } {
